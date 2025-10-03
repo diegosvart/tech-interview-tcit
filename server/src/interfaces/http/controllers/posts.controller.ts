@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+
 import { createPostService, listPostsService, getPostByIdService, updatePostService, deletePostService } from '../../../application/services';
 import type { PostCreateDTO, PostListQueryDTO, PostIdParamDTO, PostUpdateDTO } from '../../../domain/dtos';
 

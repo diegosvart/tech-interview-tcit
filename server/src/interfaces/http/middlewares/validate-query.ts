@@ -1,5 +1,5 @@
-import { ZodSchema } from 'zod';
 import { Request, Response, NextFunction } from 'express';
+import { ZodSchema } from 'zod';
 
 // Validates req.query against a Zod schema and stores the typed result in res.locals.query
 export function validateQuery<T>(schema: ZodSchema<T>) {
