@@ -1,0 +1,348 @@
+{
+"descripciongeneral": "La pantalla muestra una interfaz de tipo CRUD básica para la gestión de publicaciones (POST). En la parte superior existe un campo de filtro por nombre y un botón de búsqueda. Debajo se despliega una tabla con tres columnas: Nombre, Descripción y Acción. La tabla contiene varias filas con entradas de tipo 'POST', sus descripciones y un botón de acción 'Eliminar'. En la parte inferior de la pantalla aparecen campos de entrada para agregar un nuevo registro (Nombre y Descripción) junto con un botón 'Crear'. El estilo es esquemático, tipo wireframe, con un diseño sencillo en blanco y negro.",
+"estructuraui": [
+"header: filtro de nombre y botón buscar",
+"main content: tabla de registros con columnas Nombre, Descripción y Acción",
+"footer: formulario de entrada con campos Nombre, Descripción y botón Crear"
+],
+"elementosui": [
+{
+"tipo": "input de texto",
+"texto": "Filtro de Nombre",
+"estado": "activo",
+"posicionrelativa": "superior izquierda"
+},
+{
+"tipo": "botón",
+"texto": "Buscar",
+"estado": "activo",
+"posicionrelativa": "superior derecha"
+},
+{
+"tipo": "tabla",
+"texto": "Nombre | Descripción | Acción",
+"estado": "",
+"posicionrelativa": "centro"
+},
+{
+"tipo": "fila de tabla",
+"texto": "POST 1 | Hola como están | Eliminar",
+"estado": "",
+"posicionrelativa": "centro"
+},
+{
+"tipo": "fila de tabla",
+"texto": "POST 2 | Hola como estánsss | Eliminar",
+"estado": "",
+"posicionrelativa": "centro"
+},
+{
+"tipo": "input de texto",
+"texto": "Nombre",
+"estado": "activo",
+"posicionrelativa": "parte inferior izquierda"
+},
+{
+"tipo": "input de texto",
+"texto": "Descripción",
+"estado": "activo",
+"posicionrelativa": "parte inferior centro"
+},
+{
+"tipo": "botón",
+"texto": "Crear",
+"estado": "activo",
+"posicionrelativa": "parte inferior derecha"
+}
+],
+"temaoambiente": "Wireframe simple, estilo esquemático y minimalista orientado a funcionalidad CRUD",
+"textopresente": "Filtro de Nombre, Buscar, Nombre, Descripción, Acción, POST 1, POST 2, Hola como están, Hola como estánsss, Eliminar, Crear",
+"flujoprincipal": "Buscar publicaciones existentes por nombre, visualizar registros y eliminarlos o crear nuevas entradas.",
+"atributosfrontend": {
+"tipografia": "Sans-serif genérica (wireframe, no definida)",
+"paletacolores": [
+"#FFFFFF",
+"#000000",
+"gris claro"
+],
+"frameworksopatrones": [
+"Wireframe genérico",
+"Diseño basado en tablas CRUD"
+],
+"consistenciadisenho": "Estructura uniforme, columnas alineadas, formularios básicos coherentes con el objetivo CRUD."
+},
+"frontenddefinition": {
+"stack": {
+"framework": "React",
+"bundler": "Vite",
+"statemanagement": "Redux (redux-toolkit)",
+"styles": "Tailwind CSS",
+"backend": "Node.js (API REST)",
+"httpclient": "fetch / axios (opcional)"
+},
+"projectconfig": {
+"packagejsondependencies": {
+"react": "^18.0.0",
+"react-dom": "^18.0.0",
+"vite": "^5.0.0",
+"react-router-dom": "^6.0.0",
+"@reduxjs/toolkit": "^1.9.0",
+"react-redux": "^8.0.0",
+"tailwindcss": "^3.0.0",
+"autoprefixer": "^10.0.0",
+"postcss": "^8.0.0",
+"axios": "^1.0.0"
+},
+"scripts": {
+"dev": "vite",
+"build": "vite build",
+"preview": "vite preview",
+"lint": "eslint .",
+"test": "vitest"
+},
+"vitebasic": {
+"root": "src",
+"alias": {
+"@": "/src"
+}
+},
+"tailwindbasicconfig": {
+"content": [
+"./index.html",
+"./src/**/*.{js,ts,jsx,tsx}"
+],
+"theme": {
+"extend": {}
+},
+"plugins": []
+}
+},
+"routes": [
+{
+"path": "/",
+"name": "PostsList",
+"component": "PostsList"
+},
+{
+"path": "/create",
+"name": "PostCreate",
+"component": "PostForm"
+},
+{
+"path": "/edit/:id",
+"name": "PostEdit",
+"component": "PostForm"
+}
+],
+"componentsspec": {
+"HeaderFilter": {
+"description": "Barra superior con input de filtro y botón Buscar",
+"props": {
+"value": "string",
+"onChange": "function",
+"onSearch": "function"
+},
+"tailwindexamples": "flex gap-2 items-center p-4"
+},
+"PostsTable": {
+"description": "Tabla responsiva que muestra nombre, descripción y acciones",
+"props": {
+"posts": "Post[]",
+"onDelete": "function(id)",
+"onEdit": "function(id)"
+},
+"accessibility": "usar <table> con <thead>, <tbody>, roles y captions",
+"tailwindexamples": "w-full table-auto border-collapse"
+},
+"PostRow": {
+"description": "Fila de la tabla para cada post",
+"props": {
+"post": "Post",
+"index": "number"
+},
+"tailwindexamples": "hover:bg-gray-50"
+},
+"PostForm": {
+"description": "Formulario para crear o editar un post (nombre y descripción)",
+"props": {
+"initialValues": "Post | null",
+"onSubmit": "function(postData)"
+},
+"validation": "validar nombre no vacío, descripción opcional length limit",
+"tailwindexamples": "flex flex-col gap-3 p-4 max-w-xl"
+},
+"ConfirmDialog": {
+"description": "Modal para confirmar eliminación",
+"props": {
+"isOpen": "boolean",
+"onConfirm": "function",
+"onCancel": "function"
+}
+}
+},
+"uiguidelinesandtailwind": {
+"layout": {
+"container": "mx-auto px-4 sm:px-6 lg:px-8",
+"maxwidth": "proponer max-w-4xl para desktop"
+},
+"buttons": {
+"primary": "px-4 py-2 rounded-md shadow-sm bg-blue-600 text-white hover:bg-blue-700",
+"danger": "px-3 py-1 rounded-md bg-red-600 text-white hover:bg-red-700",
+"ghost": "px-3 py-1 rounded-md border"
+},
+"inputs": "w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400",
+"tableresponsive": {
+"mobile": "stack rows (flex-col) or horizontal scroll - use overflow-x-auto",
+"desktop": "table layout with columns"
+},
+"spacing": "usar gap-2 y gap-4 para separación, p-4 en contenedores principales",
+"colorssuggestion": {
+"primary": "#1E90FF",
+"background": "#FFFFFF",
+"muted": "#F3F4F6",
+"text": "#111827"
+}
+},
+"apicontract": {
+"entity": "posts",
+"endpoints": {
+"list": {
+"method": "GET",
+"path": "/api/posts",
+"queryparams": ["q (opcional) - texto a filtrar por nombre", "page (opcional)", "limit (opcional)"]
+},
+"get": {
+"method": "GET",
+"path": "/api/posts/:id"
+},
+"create": {
+"method": "POST",
+"path": "/api/posts",
+"body": {
+"name": "string (required)",
+"description": "string (optional)"
+}
+},
+"update": {
+"method": "PUT",
+"path": "/api/posts/:id",
+"body": {
+"name": "string",
+"description": "string"
+}
+},
+"delete": {
+"method": "DELETE",
+"path": "/api/posts/:id"
+}
+},
+"responseshape": {
+"post": {
+"id": "string | number",
+"name": "string",
+"description": "string",
+"createdAt": "ISO timestamp",
+"updatedAt": "ISO timestamp"
+},
+"listresponse": {
+"data": "Post[]",
+"meta": {
+"total": "number",
+"page": "number",
+"limit": "number"
+}
+}
+}
+},
+"reduxspec": {
+"slicename": "posts",
+"initialstate": {
+"items": "[]",
+"status": "'idle' | 'loading' | 'succeeded' | 'failed'",
+"error": "null | string",
+"filter": ""
+},
+"thunks": [
+{
+"name": "fetchPosts",
+"description": "Obtiene lista de posts, acepta filtro q",
+"dispatches": ["pending", "fulfilled(items)", "rejected(error)"]
+},
+{
+"name": "createPost",
+"description": "Crea un nuevo post y agrega al estado"
+},
+{
+"name": "updatePost",
+"description": "Actualiza post por id y reemplaza en items"
+},
+{
+"name": "deletePost",
+"description": "Elimina post por id y remueve de items"
+}
+],
+"selectors": [
+"selectAllPosts",
+"selectPostById",
+"selectPostsStatus",
+"selectPostsError",
+"selectFilteredPosts"
+],
+"recommendedmiddleware": [
+"redux-thunk (incluido en redux-toolkit)",
+"opcional: redux-logger en desarrollo"
+]
+},
+"responsiveness": {
+"breakpoints": {
+"sm": "640px (mobile)",
+"md": "768px (tablet)",
+"lg": "1024px (desktop)",
+"xl": "1280px"
+},
+"behavior": {
+"mobile": "tabla convertible a lista vertical con cada fila en tarjeta o permitir scroll horizontal",
+"tabletdesktop": "mostrar tabla con columnas",
+"forms": "inputs full-width en mobile, inline en desktop cuando aplique"
+}
+},
+"accessibility": {
+"roles": "usar roles ARIA adecuados para tablas, botones y formularios",
+"labels": "inputs con <label> vinculados por htmlFor/id",
+"keyboard": "asegurar navegación por teclado para modales y botones",
+"contrast": "respetar contraste de texto >= AA"
+},
+"testingandci": {
+"unittests": "Vitest + React Testing Library para componentes y slices",
+"e2etests": "Playwright o Cypress para flujos CRUD",
+"cirecommendation": "GitHub Actions: run tests, lint y build en PR"
+},
+"projectfilestructuresuggestion": {
+"src": {
+"app": ["store.ts", "rootReducer.ts"],
+"features": {
+"posts": ["postsSlice.ts", "postsAPI.ts", "components", "PostForm.tsx", "PostsList.tsx"]
+},
+"components": ["HeaderFilter.tsx", "ConfirmDialog.tsx", "UI primitives"],
+"pages": ["Home.tsx", "CreatePost.tsx", "EditPost.tsx"],
+"utils": ["api.ts", "validators.ts"],
+"styles": ["tailwind.css"]
+}
+},
+"implementationnotes": [
+"Usar redux-toolkit createAsyncThunk para llamadas API y slices para mutaciones locales.",
+"Manejar estados de carga y errores en UI (skeletons o spinners).",
+"Debounce en filtro de búsqueda para evitar llamadas en exceso.",
+"Optimizar tabla para grandes volúmenes usando paginación en backend o lazy loading."
+],
+"samplecodesnippets": {
+"fetchPoststhunkexample": "createAsyncThunk('posts/fetchPosts', async (q, thunkAPI) => { const res = await fetch(`/api/posts?q=${encodeURIComponent(q||'')}`); return res.json(); })",
+"postsSlicereducerexample": "createSlice({ name: 'posts', initialState, reducers: { setFilter(state, action) { state.filter = action.payload } }, extraReducers: (builder) => { /* handle thunks */ } })"
+},
+"deployment": {
+"devserver": "vite dev",
+"productionbuild": "vite build -> servir con Node static files o CDN",
+"backendconnectivity": "configurar baseUrl en variable de entorno REACTAPPAPIURL o VITEAPIURL"
+}
+}
+}

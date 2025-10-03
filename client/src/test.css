@@ -1,0 +1,10 @@
+/* Test para verificar que el CSS se carga */
+body {
+  background-color: #f0f0f0 !important;
+}
+
+.test-css-loaded {
+  color: red !important;
+  font-size: 24px !important;
+  font-weight: bold !important;
+}
