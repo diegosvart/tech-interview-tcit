@@ -1,15 +1,14 @@
 ﻿import 'dotenv/config';
-import express from 'express';
 import cors from 'cors';
+import express from 'express';
 import helmet from 'helmet';
+import pino from 'pino';
 import pinoHttp from 'pino-http';
 import swaggerUi from 'swagger-ui-express';
-import pino from 'pino';
-// Import del contrato OpenAPI (JSON)
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const openapiDoc = require('./interfaces/http/docs/openapi.json');
-import postsRouter from './interfaces/http/routes/posts.routes';
+
+import openapiDoc from './interfaces/http/docs/openapi.json';
 import { errorHandler } from './interfaces/http/middlewares/error-handler';
+import postsRouter from './interfaces/http/routes/posts.routes';
 
 const app = express();
 

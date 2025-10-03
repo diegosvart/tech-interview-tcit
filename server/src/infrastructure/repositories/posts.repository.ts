@@ -1,5 +1,5 @@
-import { prisma } from '../prisma/client';
 import type { Post } from '../../domain/entities';
+import { prisma } from '../prisma/client';
 
 export async function createPost(input: {
   name: string;

@@ -1,7 +1,8 @@
 import { Router } from 'express';
+
+import { PostCreateSchema, PostListQuerySchema, PostIdParamSchema, PostUpdateSchema } from '../../../domain/dtos';
 import { createPost, listPosts, getPost, updatePost, deletePost } from '../controllers/posts.controller';
 import { validateBody, validateQuery, validateParams } from '../middlewares';
-import { PostCreateSchema, PostListQuerySchema, PostIdParamSchema, PostUpdateSchema } from '../../../domain/dtos';
 
 const postsRouter = Router();
 
