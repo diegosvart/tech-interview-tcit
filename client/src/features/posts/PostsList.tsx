@@ -4,6 +4,7 @@ import FilterHeader from './FilterHeader';
 import PostsTable from './PostsTable';
 import PostFormInline from './PostFormInline';
 import ConfirmModal from './ConfirmModal';
+import SuccessModal from './SuccessModal';
 
 export default function PostsList() {
   // Estado local para el filtro
@@ -16,6 +17,10 @@ export default function PostsList() {
   // Estado del modal de confirmación
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [postToDelete, setPostToDelete] = useState<{ id: string; name: string } | null>(null);
+  
+  // Estado del modal de éxito
+  const [successModalOpen, setSuccessModalOpen] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   // RTK Query hooks con parámetros de paginación
   const { data, isLoading, isError } = useListPostsQuery({ page, pageSize });
@@ -63,6 +68,12 @@ export default function PostsList() {
     setPage(1);
   };
 
+  // Handler para éxito en creación
+  const handleCreateSuccess = (name: string) => {
+    setSuccessMessage(`El post <strong>"${name}"</strong> ha sido creado.`);
+    setSuccessModalOpen(true);
+  };
+
   // Handler para abrir modal de confirmación
   const handleDelete = (id: string) => {
     const post = filteredPosts.find(p => p.id === id);
@@ -84,9 +95,13 @@ export default function PostsList() {
         setPage(page - 1);
       }
       
-      // Cerrar modal
+      // Cerrar modal de confirmación
       setDeleteModalOpen(false);
       setPostToDelete(null);
+      
+      // Mostrar modal de éxito
+      setSuccessMessage(`El post <strong>"${postToDelete.name}"</strong> ha sido eliminado.`);
+      setSuccessModalOpen(true);
     } catch (error) {
       console.error('Error al eliminar post:', error);
       alert('Error al eliminar el post. Intente nuevamente.');
@@ -110,6 +125,10 @@ export default function PostsList() {
         description: description || undefined 
       } 
     }).unwrap();
+    
+    // Mostrar modal de éxito
+    setSuccessMessage(`El post <strong>"${name}"</strong> ha sido actualizado.`);
+    setSuccessModalOpen(true);
   };
 
   // Handlers de paginación
@@ -140,6 +159,7 @@ export default function PostsList() {
         <PostFormInline 
           onCreate={handleCreate}
           isLoading={isCreating}
+          onSuccess={handleCreateSuccess}
         />
       </section>
 
@@ -179,6 +199,14 @@ export default function PostsList() {
         onConfirm={confirmDelete}
         onCancel={cancelDelete}
         isDangerous={true}
+      />
+
+      {/* Modal de éxito */}
+      <SuccessModal
+        isOpen={successModalOpen}
+        message={successMessage}
+        onClose={() => setSuccessModalOpen(false)}
+        autoCloseDelay={3000}
       />
     </div>
   );

@@ -344,8 +344,3 @@ if (trimmedName === post.name && description.trim() === (post.description || '')
 - [ ] Focus management mejorado
 - [ ] Screen reader announcements
 
----
-
-**Creado**: 3 de octubre de 2025  
-**Versión**: 1.0.0  
-**Patrón**: Edición inline sin modales

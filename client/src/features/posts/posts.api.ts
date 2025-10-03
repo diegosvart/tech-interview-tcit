@@ -35,8 +35,11 @@ export const postsApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: '/api/v1' }),
   tagTypes: ['Posts'],
   endpoints: (builder) => ({
-    listPosts: builder.query<PostsResponse, { page?: number; pageSize?: number } | void>({
-      query: (params) => ({ url: '/posts', params: params ?? {} as Record<string, any> }),
+    listPosts: builder.query<PostsResponse, { page?: number; pageSize?: number }>({
+      query: (params = {}) => ({ 
+        url: '/posts', 
+        params: params 
+      }),
       providesTags: (result) =>
         result?.data
           ? [

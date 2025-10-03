@@ -6,13 +6,13 @@ Componente `ConfirmModal` diseñado con estilo minimalista y animaciones suaves 
 
 ## Características
 
-### 🎨 Diseño
+### Diseño
 - Overlay con fondo semitransparente (rgba(0, 0, 0, 0.5))
 - Card centrado con border-radius, sombra y borde
 - Tipografía consistente con el resto del sitio
 - Variables CSS para mantener coherencia visual
 
-### ✨ Animaciones
+### Animaciones
 1. **Overlay**: FadeIn (0.2s)
    - Aparición suave del fondo oscuro
    
@@ -21,7 +21,7 @@ Componente `ConfirmModal` diseñado con estilo minimalista y animaciones suaves 
    - Efecto de zoom sutil (scale: 0.95 → 1)
    - Combina movimiento y escala para mayor dinamismo
 
-### 🎯 Funcionalidades
+### Funcionalidades
 
 #### Accesibilidad
 - **Tecla ESC**: Cierra el modal (equivalente a cancelar)
@@ -165,25 +165,3 @@ const cancelDelete = () => {
   }
 }
 ```
-
-## Mejoras Futuras
-
-### UX
-- [ ] Agregar loading state al botón confirmar durante operaciones async
-- [ ] Añadir icono de advertencia para acciones peligrosas
-- [ ] Permitir contenido personalizado en el body (React.ReactNode)
-
-### Accesibilidad
-- [ ] Focus trap (mantener foco dentro del modal)
-- [ ] ARIA labels apropiados
-- [ ] Focus automático en botón cancelar al abrir
-
-### Animaciones
-- [ ] Animación de salida (fadeOut + slideDown)
-- [ ] Diferentes tipos de animación (bounce, zoom, slide-right)
-- [ ] Reducir animaciones si el usuario tiene `prefers-reduced-motion`
-
----
-
-**Creado**: 3 de octubre de 2025  
-**Versión**: 1.0.0

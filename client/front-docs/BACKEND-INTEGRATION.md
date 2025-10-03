@@ -227,7 +227,3 @@ interface Error {
 - [ ] Feedback visual al crear/editar/eliminar
 - [ ] Skeleton loaders durante fetch
 
----
-
-**Fecha de actualización:** 3 de octubre de 2025  
-**Versión del contrato:** OpenAPI 3.0.3 - API v1
