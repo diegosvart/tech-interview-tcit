@@ -76,7 +76,7 @@ export default function PostsTableRow({ post, onDelete, onUpdate }: PostsTableRo
     try {
       await onUpdate(post.id, trimmedName, description.trim());
       setIsEditing(false);
-    } catch (err) {
+    } catch {
       setError('Error al actualizar el post');
     } finally {
       setIsUpdating(false);

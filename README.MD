@@ -1,5 +1,9 @@
 # Test técnico full‑stack – Backend‑first (Node/Express/Prisma) + Frontend (React/Vite/RTK)
 
+![Listado de Posts](https://raw.githubusercontent.com/diegosvart/tech-interview-tcit/main/posts.png)
+
+[➡ Quick Start](./QUICKSTART.md)
+
 Repositorio de una app web full‑stack construida con enfoque backend‑first: contrato OpenAPI, backend Node.js + Express (TypeScript) con Prisma/PostgreSQL y pruebas; luego frontend React + Vite + Redux Toolkit (TypeScript). Clean Architecture, IDs UUID, paginación por offset, Docker para dev y CI en GitHub Actions.
 
 Importante: En esta fase no se generará código. Esta documentación define alcance, arquitectura, contratos y el plan de trabajo (TODO) siguiendo buenas prácticas, clean code y camelCase.
@@ -48,8 +52,9 @@ Más detalle, ver:
  - `docs/review.md` (checklist de code review)
  - `docs/assessment.md` (informe de cumplimiento)
 
-Guía paso a paso (comandos y justificaciones):
-- `TODO.md`
+Guías rápidas:
+- `QUICKSTART.md` (arranque inmediato)
+- `TODO.md` (plan granular de trabajo)
 
 ## Distribución del proyecto (propuesta)
 ```

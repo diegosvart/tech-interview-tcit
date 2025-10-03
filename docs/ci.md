@@ -48,6 +48,8 @@ Orden de fallos (short-circuit):
 2. Backend tests (incluye typecheck implícito por Vitest y scripts) tras migraciones.
 3. Frontend typecheck + tests + build.
 
+Para ejecución manual rápida ver `QUICKSTART.md`.
+
 ## Mejoras futuras
 | Área | Acción | Beneficio |
 |------|--------|-----------|

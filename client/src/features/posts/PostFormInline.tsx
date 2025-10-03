@@ -48,7 +48,7 @@ export default function PostFormInline({ onCreate, isLoading, onSuccess }: PostF
       
       // Llamar callback de éxito con el nombre del post creado
       onSuccess?.(createdName);
-    } catch (err) {
+    } catch {
       setError('Error al crear el post. Intente nuevamente.');
     }
   };

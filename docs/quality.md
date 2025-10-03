@@ -37,6 +37,8 @@ Plantillas:
 
 Si el gate 1 falla, no se consumen recursos de DB ni se ejecutan tests largos.
 
+Referencia de arranque rápido: `QUICKSTART.md`.
+
 ## Política de Warnings
 - Warnings de ESLint en client se tratan como deuda técnica y deben reducirse antes del release estable.
 - Se recomienda no introducir nuevos warnings (fail-fast policy futura: convertir en errores).
