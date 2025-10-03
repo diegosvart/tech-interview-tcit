@@ -1,0 +1,233 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Tech Test TCIT API",
+    "version": "1.0.0",
+    "description": "Initial contract of API v1: health and Posts CRUD with pagination by offset. UUIDs IDs."
+  },
+  "servers": [
+    { "url": "http://localhost:3000/api/v1", "description": "Local development" },
+    { "url": "https://api.example.com/api/v1", "description": "Production" }
+  ],
+  "tags": [
+    { "name": "health", "description": "Healthcheck & status" },
+    { "name": "posts", "description": "Posts management" }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": ["health"],
+        "summary": "Check service status",
+        "responses": {
+          "200": {
+            "description": "Service OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "ok": { "type": "boolean", "example": true } },
+                  "required": ["ok"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/posts": {
+      "get": {
+        "tags": ["posts"],
+        "summary": "List posts (pagination by offset)",
+        "parameters": [
+          { "$ref": "#/components/parameters/PageParam" },
+          { "$ref": "#/components/parameters/PageSizeParam" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of posts",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PostsListResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      },
+      "post": {
+        "tags": ["posts"],
+        "summary": "Create a post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PostCreateInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Post created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Post" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "409": { "$ref": "#/components/responses/Conflict" },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/posts/{id}": {
+      "get": {
+        "tags": ["posts"],
+        "summary": "Get a post by ID",
+        "parameters": [ { "$ref": "#/components/parameters/PostIdParam" } ],
+        "responses": {
+          "200": {
+            "description": "Post found",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Post" } }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      },
+      "put": {
+        "tags": ["posts"],
+        "summary": "Update a post",
+        "parameters": [ { "$ref": "#/components/parameters/PostIdParam" } ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/PostUpdateInput" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Post updated",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Post" } } }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      },
+      "delete": {
+        "tags": ["posts"],
+        "summary": "Delete a post",
+        "parameters": [ { "$ref": "#/components/parameters/PostIdParam" } ],
+        "responses": {
+          "204": { "description": "Deleted" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Post": {
+        "type": "object",
+        "required": ["id", "title", "createdAt", "updatedAt"],
+        "properties": {
+          "id": { "type": "string", "format": "uuid", "example": "a3f1e8b6-7c2f-4c2a-9f53-2f8d5f5a9b10" },
+          "title": { "type": "string", "minLength": 1, "maxLength": 200 },
+          "content": { "type": "string", "nullable": true },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "PostCreateInput": {
+        "type": "object",
+        "required": ["title"],
+        "properties": {
+          "title": { "type": "string", "minLength": 1, "maxLength": 200 },
+          "content": { "type": "string", "nullable": true }
+        }
+      },
+      "PostUpdateInput": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string", "minLength": 1, "maxLength": 200 },
+          "content": { "type": "string", "nullable": true }
+        },
+        "minProperties": 1
+      },
+      "Error": {
+        "type": "object",
+        "required": ["message"],
+        "properties": {
+          "message": { "type": "string" },
+          "code": { "type": "string" },
+          "details": { "type": "object", "additionalProperties": true }
+        }
+      },
+      "PaginationMeta": {
+        "type": "object",
+        "required": ["page", "pageSize", "total", "hasNextPage"],
+        "properties": {
+          "page": { "type": "integer", "format": "int32", "minimum": 1, "example": 1 },
+          "pageSize": { "type": "integer", "format": "int32", "minimum": 1, "maximum": 100, "example": 10 },
+          "total": { "type": "integer", "format": "int32", "minimum": 0, "example": 57 },
+          "hasNextPage": { "type": "boolean", "example": true }
+        }
+      },
+      "PostsListResponse": {
+        "type": "object",
+        "required": ["data", "pagination"],
+        "properties": {
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/Post" } },
+          "pagination": { "$ref": "#/components/schemas/PaginationMeta" }
+        }
+      }
+    },
+    "parameters": {
+      "PostIdParam": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "format": "uuid" },
+        "description": "ID post (UUID)"
+      },
+      "PageParam": {
+        "name": "page",
+        "in": "query",
+        "required": false,
+        "schema": { "type": "integer", "format": "int32", "minimum": 1, "default": 1 },
+        "description": "Page number (>= 1)"
+      },
+      "PageSizeParam": {
+        "name": "pageSize",
+        "in": "query",
+        "required": false,
+        "schema": { "type": "integer", "format": "int32", "minimum": 1, "maximum": 100, "default": 10 },
+        "description": "Page size (1-100)"
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Invalid request",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+      },
+      "NotFound": {
+        "description": "Resource not found",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+      },
+      "Conflict": {
+        "description": "Conflict (e.g., duplicate)",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+      },
+      "ServerError": {
+        "description": "Internal server error",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+      }
+    }
+  }
+}

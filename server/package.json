@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "dist/main.js",
-  "prisma": { "seed": "tsx prisma/seed.ts" },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "cross-env NODE_ENV=development tsx watch src/main.ts",
@@ -16,23 +18,26 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",  
+  "license": "ISC",
   "dependencies": {
     "@prisma/client": "^6.16.3",
     "cors": "^2.8.5",
+    "cross-env": "^10.1.0",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "helmet": "^8.1.0",
     "pino": "^9.13.0",
     "pino-http": "^10.5.0",
-    "zod": "^4.1.11",
-    "cross-env": "^10.1.0"
+    "swagger-ui-express": "^5.0.1",
+    "tech-test-tcit": "file:..",
+    "zod": "^4.1.11"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/helmet": "^0.0.48",
     "@types/node": "^24.6.2",
+    "@types/swagger-ui-express": "^4.1.6",
     "prisma": "^6.16.3",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"

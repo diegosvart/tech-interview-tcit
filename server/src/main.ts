@@ -1,8 +1,12 @@
-﻿import 'dotenv/config'; //.env variables
-import express = require('express'); 'express'; // Express 
-import cors = require('cors'); 'cors'; // Middleware for CORS
-import helmet = require('helmet'); 'helmet'; // Middleware for security headers
-import pinoHttp from 'pino-http'; 'pino-http'; // HTTP logger middleware
+﻿import 'dotenv/config';
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import pinoHttp from 'pino-http';
+import swaggerUi from 'swagger-ui-express';
+// Import del contrato OpenAPI (JSON)
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const openapiDoc = require('./interfaces/http/docs/openapi.json');
 
 const app = express();
 
@@ -11,6 +15,9 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json({ limit: '1mb' }));
 app.use(pinoHttp());
+
+// Swagger UI en /api/docs
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(openapiDoc));
 
 // Healthcheck
 app.get('/api/v1/health', (_req, res) => {
