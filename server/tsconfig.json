@@ -43,5 +43,15 @@
     "moduleResolution": "node",
     "esModuleInterop": true,
     "resolveJsonModule": true,
-  }
+  },
+  // Limit the build to only server source files
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "scripts",
+    "prisma"
+  ]
 }
