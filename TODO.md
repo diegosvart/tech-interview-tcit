@@ -368,3 +368,73 @@ Con la base creada:
 - Calidad/CI: `docs/quality.md`, `docs/ci.md`
 
 Fin del TODO detallado.
+
+--------------------------------------------------------------------------------
+
+## Notas técnicas para paso a producción
+
+- Variables de entorno y secretos
+  - Centralizar configuración en variables de entorno. No commitear `.env`.
+  - Usar un gestor de secretos (GitHub Actions Secrets, Azure Key Vault, AWS Secrets Manager).
+  - Separar configs por entorno (dev, staging, prod). Validar configuración al arranque (Zod).
+
+- Base de datos y migraciones
+  - En despliegue usar `prisma migrate deploy` (no `migrate dev`).
+  - Backups antes de cada despliegue. Probar restauración/rollback en staging.
+  - Pooling de conexiones (Prisma; opcional pgbouncer). Ajustar timeouts y tamaño de pool por entorno.
+
+- Seguridad y hardening
+  - CORS con allowlist de orígenes de prod (evitar `*`).
+  - Helmet con políticas adecuadas (por ejemplo, `contentSecurityPolicy`).
+  - Rate limiting (p. ej. `express-rate-limit`) y límites de body.
+  - Validación estricta de entrada (Zod) en todos los endpoints. Sanitizar salidas si hay HTML.
+  - Deshabilitar endpoints de debug en prod (Swagger detrás de auth o no expuesto públicamente).
+
+- Logs y observabilidad
+  - Logs estructurados (pino) con nivel por entorno (`info` en prod).
+  - Correlación de peticiones (request id). Exportar a un stack de logs (ELK, Loki, etc.).
+  - Métricas (Prometheus/OpenTelemetry) y alertas (SLOs: disponibilidad, latencia, tasa de error).
+
+- Salud y readiness
+  - `/health` (liveness) y `/ready` (readiness: DB y dependencias críticas).
+  - HEALTHCHECK en contenedores y probes en el orquestador.
+
+- OpenAPI/Swagger
+  - Publicar OpenAPI versionado. Evitar Swagger abierto en prod o protegerlo.
+  - Alinear contrato y tests (idealmente contract testing).
+  - Añadir ejemplos y respuestas de error consistentes.
+
+- Errores y respuesta
+  - Estructura de error consistente (`code`, `message`, `details`).
+  - Mapear errores de Prisma a HTTP (400/404/409), ocultar detalles internos al cliente.
+
+- CI/CD
+  - Pipeline con: lint, typecheck, tests, build, `prisma generate` y `prisma migrate deploy` en deploy.
+  - Escaneo de vulnerabilidades (npm audit, Dependabot/Snyk).
+  - Checks obligatorios en PR y revisiones antes de merge a `develop/main`.
+
+- Contenedores y runtime
+  - Imagen Node minimal (alpine/distroless) y build multi-stage.
+  - `NODE_ENV=production`, sin source maps en prod (o subirlos a un store seguro si se requieren).
+  - Limitar memoria/CPU por contenedor y configurar auto-restart.
+
+- Red y despliegue
+  - Reverse proxy / Ingress con TLS (HTTPS end-to-end). HSTS y redirección 80→443.
+  - Políticas de caché controladas y correcto manejo de CORS si hay CDN/frontend.
+
+- Backups y recuperación
+  - Backups automáticos con retención definida.
+  - Procedimiento documentado y probado de restauración/rollback.
+
+- Migraciones y orquestación
+  - Asegurar que `migrate deploy` sea idempotente y con timeout razonable.
+  - Alertar y abortar arranque de la app si la migración falla.
+
+- Versionado y trazabilidad
+  - Versionar la API (e.g., `/api/v1`) y el documento OpenAPI.
+  - Incluir hash/versión en logs al arranque para rastrear despliegues.
+
+- Datos y privacidad
+  - Evitar PII en logs; enmascarar o truncar campos sensibles.
+  - Revisar retención de datos y cumplimiento (GDPR/LOPD si aplica).
+
