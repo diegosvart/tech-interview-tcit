@@ -1,6 +1,6 @@
 # Test técnico full‑stack – Backend‑first (Node/Express/Prisma) + Frontend (React/Vite/RTK)
 
-![Listado de Posts](https://raw.githubusercontent.com/diegosvart/tech-interview-tcit/main/posts.png)
+![Listado de Posts](./posts.png)
 
 [➡ Quick Start](./QUICKSTART.md)
 
