@@ -7,28 +7,14 @@ async function main() {
   // Elimina esta línea si prefieres conservar datos existentes
   await prisma.post.deleteMany();
 
-  const posts = [
-    {
-      name: 'Primer post: Introducción',
-      description: 'Bienvenido al blog de prueba. Este es el primer post.'
-    },
-    {
-      name: 'Segundo post: Stack técnico',
-      description: 'Node.js + Express + TypeScript + Prisma + PostgreSQL.'
-    },
-    {
-      name: 'Tercer post: Arquitectura limpia',
-      description: 'Capas domain, application, infrastructure, interfaces.'
-    },
-    {
-      name: 'Cuarto post: OpenAPI primero',
-      description: 'Definimos contrato antes de implementar endpoints.'
-    },
-    {
-      name: 'Quinto post: Observabilidad',
-      description: 'Logs estructurados con pino y métricas próximamente.'
-    }
-  ];
+  // Generar al menos 50 posts de ejemplo
+  const posts: { name: string; description: string | null }[] = [];
+  for (let i = 1; i <= 50; i++) {
+    posts.push({
+      name: `Post ${i}: título de ejemplo`,
+      description: i % 3 === 0 ? null : `Descripción del post ${i}`,
+    });
+  }
 
   await prisma.post.createMany({ data: posts });
 

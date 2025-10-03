@@ -3,19 +3,17 @@ import { FormEvent, useState } from 'react';
 interface PostFormInlineProps {
   onCreate: (name: string, description: string) => Promise<void>;
   isLoading?: boolean;
-  onSuccess?: () => void;
+  onSuccess?: (name: string) => void;
 }
 
 export default function PostFormInline({ onCreate, isLoading, onSuccess }: PostFormInlineProps) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [showSuccess, setShowSuccess] = useState(false);
   const [error, setError] = useState('');
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
-    setShowSuccess(false);
 
     // Validaciones
     const trimmedName = name.trim();
@@ -44,17 +42,12 @@ export default function PostFormInline({ onCreate, isLoading, onSuccess }: PostF
       await onCreate(trimmedName, description.trim());
       
       // Limpiar formulario después de crear
+      const createdName = trimmedName;
       setName('');
       setDescription('');
       
-      // Mostrar mensaje de éxito
-      setShowSuccess(true);
-      onSuccess?.();
-      
-      // Ocultar mensaje después de 3 segundos
-      setTimeout(() => {
-        setShowSuccess(false);
-      }, 3000);
+      // Llamar callback de éxito con el nombre del post creado
+      onSuccess?.(createdName);
     } catch (err) {
       setError('Error al crear el post. Intente nuevamente.');
     }
@@ -90,13 +83,6 @@ export default function PostFormInline({ onCreate, isLoading, onSuccess }: PostF
           {isLoading ? 'Creando...' : 'Crear'}
         </button>
       </form>
-      
-      {/* Mensaje de éxito */}
-      {showSuccess && (
-        <div className="success-message">
-          ✓ Post creado exitosamente
-        </div>
-      )}
       
       {/* Mensaje de error */}
       {error && (
