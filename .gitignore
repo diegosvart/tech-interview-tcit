@@ -4,3 +4,7 @@ foreach ($e in $entries) {
     Add-Content .gitignore $e
   }
 }
+tech-requirements.md
+/docs/
+node_modules/
+**/node_modules/
