@@ -13,7 +13,7 @@ Construir una app con:
 - Dominio: modelo de "posts" tipo red social, con los campos mínimos: name y description.
 # Resumen Ejecutivo
 
-Este repositorio acompaña un test técnico para una posición Senior Software Engineer. La implementación seguirá clean architecture, buenas prácticas y camelCase. La documentación completa está en `/docs`.
+Este repositorio acompaña un test técnico para una posición Senior Software Engineer. La implementación seguirá clean architecture, buenas prácticas y camelCase. La documentación completa está en `/docs`. Consulta el índice: `docs/README.md`.
 
 ## Alcance funcional
 - Dominio: posts tipo red social con campos mínimos `name` y `description`.
@@ -35,6 +35,8 @@ Más detalle, ver:
 - `docs/db.md` (modelo y migraciones)
 - `docs/backend.md` (arquitectura y guía del backend)
 - `docs/frontend.md` (estructura del cliente)
+ - `docs/client.md` (quickstart del cliente)
+ - `docs/frontend-best-practices.md` (buenas prácticas de React)
 - `docs/conventions.md` (estilo y prácticas)
 - `docs/docker.md` (contenedores y docker-compose)
  - `docs/testing.md` (estrategia de pruebas)
@@ -42,6 +44,7 @@ Más detalle, ver:
  - `docs/ci.md` (lineamientos de CI/CD)
  - `docs/openapi.md` (documentación de API OpenAPI/Swagger)
  - `docs/observability.md` (logging y errores)
+ - `docs/pino-http.md` (guía de pino-http en el backend)
  - `docs/review.md` (checklist de code review)
  - `docs/assessment.md` (informe de cumplimiento)
 

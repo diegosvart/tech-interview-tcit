@@ -135,28 +135,28 @@
     "schemas": {
       "Post": {
         "type": "object",
-        "required": ["id", "title", "createdAt", "updatedAt"],
+        "required": ["id", "name", "createdAt", "updatedAt"],
         "properties": {
           "id": { "type": "string", "format": "uuid", "example": "a3f1e8b6-7c2f-4c2a-9f53-2f8d5f5a9b10" },
-          "title": { "type": "string", "minLength": 1, "maxLength": 200 },
-          "content": { "type": "string", "nullable": true },
+          "name": { "type": "string", "minLength": 1, "maxLength": 200 },
+          "description": { "type": "string", "nullable": true },
           "createdAt": { "type": "string", "format": "date-time" },
           "updatedAt": { "type": "string", "format": "date-time" }
         }
       },
       "PostCreateInput": {
         "type": "object",
-        "required": ["title"],
+        "required": ["name"],
         "properties": {
-          "title": { "type": "string", "minLength": 1, "maxLength": 200 },
-          "content": { "type": "string", "nullable": true }
+          "name": { "type": "string", "minLength": 1, "maxLength": 200 },
+          "description": { "type": "string", "nullable": true }
         }
       },
       "PostUpdateInput": {
         "type": "object",
         "properties": {
-          "title": { "type": "string", "minLength": 1, "maxLength": 200 },
-          "content": { "type": "string", "nullable": true }
+          "name": { "type": "string", "minLength": 1, "maxLength": 200 },
+          "description": { "type": "string", "nullable": true }
         },
         "minProperties": 1
       },
