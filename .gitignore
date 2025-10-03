@@ -5,5 +5,4 @@ foreach ($e in $entries) {
   }
 }
 tech-requirements.md
-/docs/
 **/node_modules/

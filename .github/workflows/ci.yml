@@ -6,8 +6,29 @@ on:
     branches: [ main, develop, feature/* ]
 
 jobs:
+  lint:
+    name: Lint (server & client)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project: [server, client]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - name: Install deps (${{ matrix.project }})
+        run: npm ci --prefix ${{ matrix.project }}
+      - name: Lint ${{ matrix.project }}
+        run: |
+          if [ "${{ matrix.project }}" = "server" ]; then npm --prefix server run lint; fi
+          if [ "${{ matrix.project }}" = "client" ]; then npm --prefix client run lint || echo "(client lint warnings allowed)"; fi
+
   backend:
     name: Backend (server)
+    needs: [lint]
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -43,6 +64,7 @@ jobs:
 
   frontend:
     name: Frontend (client)
+    needs: [lint]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
