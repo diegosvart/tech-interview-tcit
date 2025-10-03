@@ -1,0 +1,32 @@
+{
+  "name": "tech-test-tcit",
+  "version": "1.0.0",
+  "description": "Repositorio de una app web full‑stack construida con enfoque backend‑first: contrato OpenAPI, backend Node.js + Express (TypeScript) con Prisma/PostgreSQL y pruebas; luego frontend React + Vite + Redux Toolkit (TypeScript). Clean Architecture, IDs UUID, paginación por offset, Docker para dev y CI en GitHub Actions.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server:dev": "npm --prefix server run dev",
+    "format": "prettier -w .",
+    "lint": "eslint .",
+    "typecheck": "echo 'Type checks delegated to subprojects'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/diegosvart/tech-interview-tcit.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/diegosvart/tech-interview-tcit/issues"
+  },
+  "homepage": "https://github.com/diegosvart/tech-interview-tcit#readme",
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "cross-env": "^10.1.0"
+  }
+}
