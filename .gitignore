@@ -1,0 +1,6 @@
+$entries = @("docs/templates/","tech-requirements.md")
+foreach ($e in $entries) {
+  if (-not (Select-String -Path .gitignore -Pattern [regex]::Escape($e) -Quiet)) {
+    Add-Content .gitignore $e
+  }
+}
