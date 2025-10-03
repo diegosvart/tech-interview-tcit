@@ -2,6 +2,7 @@
   "name": "client",
   "version": "0.1.0",
   "private": true,
+  "author": "Diego Morales Contreras <moralesc.diego@gmail.com>",
   "type": "module",
   "scripts": {
     "dev": "vite",

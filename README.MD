@@ -56,6 +56,11 @@ Guías rápidas:
 - `QUICKSTART.md` (arranque inmediato)
 - `TODO.md` (plan granular de trabajo)
 
+## Author
+
+Diego Morales Contreras  
+Email: <moralesc.diego@gmail.com>
+
 ## Distribución del proyecto (propuesta)
 ```
 root/

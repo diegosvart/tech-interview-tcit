@@ -23,7 +23,7 @@
     "sanity:crud": "tsx scripts/sanity-crud.ts"
   },
   "keywords": [],
-  "author": "",
+  "author": "Diego Morales Contreras <moralesc.diego@gmail.com>",
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^6.16.3",
