@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [ main, develop, feature/* ]
+
+jobs:
+  backend:
+    name: Backend (server)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: techtest
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 5
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/techtest
+      NODE_ENV: test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - name: Install server deps
+        run: npm ci --prefix server
+      - name: Prisma generate
+        run: npm --prefix server run prisma:generate || true
+      - name: Run migrations (deploy)
+        run: npm --prefix server run prisma:migrate:deploy || true
+      - name: Seed database
+        run: npm --prefix server run prisma:seed
+      - name: Run backend tests
+        run: npm test --prefix server -- --coverage
+
+  frontend:
+    name: Frontend (client)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - name: Install client deps
+        run: npm ci --prefix client
+      - name: Typecheck
+        run: npx tsc -p client/tsconfig.json --noEmit
+      - name: Frontend tests
+        run: npm test --prefix client -- --coverage
+      - name: Build frontend
+        run: npm run build --prefix client
+
+  summary:
+    name: Summary
+    needs: [backend, frontend]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Result
+        run: |
+          echo "Backend status: ${{ needs.backend.result }}"
+          echo "Frontend status: ${{ needs.frontend.result }}"
