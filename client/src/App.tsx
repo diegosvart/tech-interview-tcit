@@ -1,4 +1,5 @@
 import { Route, Routes } from 'react-router-dom';
+
 import PostsList from './features/posts/PostsList';
 
 export default function App() {

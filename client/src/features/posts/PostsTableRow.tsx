@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Post } from './posts.api';
+
 import ConfirmModal from './ConfirmModal';
+import { Post } from './posts.api';
 
 interface PostsTableRowProps {
   post: Post;

@@ -1,0 +1,233 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Tech Test TCIT API",
+    "version": "1.0.0",
+    "description": "Contrato inicial de la API v1: health y Posts CRUD con paginación por offset. IDs UUID."
+  },
+  "servers": [
+    { "url": "http://localhost:3000/api/v1", "description": "Desarrollo local" },
+    { "url": "https://api.example.com/api/v1", "description": "Producción (placeholder)" }
+  ],
+  "tags": [
+    { "name": "health", "description": "Healthcheck y estado del servicio" },
+    { "name": "posts", "description": "Gestión de publicaciones" }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": ["health"],
+        "summary": "Comprobar estado del servicio",
+        "responses": {
+          "200": {
+            "description": "Servicio OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "ok": { "type": "boolean", "example": true } },
+                  "required": ["ok"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/posts": {
+      "get": {
+        "tags": ["posts"],
+        "summary": "Listar posts (paginación por offset)",
+        "parameters": [
+          { "$ref": "#/components/parameters/PageParam" },
+          { "$ref": "#/components/parameters/PageSizeParam" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Listado paginado de posts",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PostsListResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      },
+      "post": {
+        "tags": ["posts"],
+        "summary": "Crear un post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PostCreateInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Post creado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Post" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "409": { "$ref": "#/components/responses/Conflict" },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/posts/{id}": {
+      "get": {
+        "tags": ["posts"],
+        "summary": "Obtener un post por id",
+        "parameters": [ { "$ref": "#/components/parameters/PostIdParam" } ],
+        "responses": {
+          "200": {
+            "description": "Post encontrado",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Post" } }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      },
+      "put": {
+        "tags": ["posts"],
+        "summary": "Actualizar un post",
+        "parameters": [ { "$ref": "#/components/parameters/PostIdParam" } ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/PostUpdateInput" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Post actualizado",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Post" } } }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      },
+      "delete": {
+        "tags": ["posts"],
+        "summary": "Eliminar un post",
+        "parameters": [ { "$ref": "#/components/parameters/PostIdParam" } ],
+        "responses": {
+          "204": { "description": "Eliminado" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Post": {
+        "type": "object",
+        "required": ["id", "title", "createdAt", "updatedAt"],
+        "properties": {
+          "id": { "type": "string", "format": "uuid", "example": "a3f1e8b6-7c2f-4c2a-9f53-2f8d5f5a9b10" },
+          "title": { "type": "string", "minLength": 1, "maxLength": 200 },
+          "content": { "type": "string", "nullable": true },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "PostCreateInput": {
+        "type": "object",
+        "required": ["title"],
+        "properties": {
+          "title": { "type": "string", "minLength": 1, "maxLength": 200 },
+          "content": { "type": "string", "nullable": true }
+        }
+      },
+      "PostUpdateInput": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string", "minLength": 1, "maxLength": 200 },
+          "content": { "type": "string", "nullable": true }
+        },
+        "minProperties": 1
+      },
+      "Error": {
+        "type": "object",
+        "required": ["message"],
+        "properties": {
+          "message": { "type": "string" },
+          "code": { "type": "string" },
+          "details": { "type": "object", "additionalProperties": true }
+        }
+      },
+      "PaginationMeta": {
+        "type": "object",
+        "required": ["page", "pageSize", "total", "hasNextPage"],
+        "properties": {
+          "page": { "type": "integer", "format": "int32", "minimum": 1, "example": 1 },
+          "pageSize": { "type": "integer", "format": "int32", "minimum": 1, "maximum": 100, "example": 10 },
+          "total": { "type": "integer", "format": "int32", "minimum": 0, "example": 57 },
+          "hasNextPage": { "type": "boolean", "example": true }
+        }
+      },
+      "PostsListResponse": {
+        "type": "object",
+        "required": ["data", "pagination"],
+        "properties": {
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/Post" } },
+          "pagination": { "$ref": "#/components/schemas/PaginationMeta" }
+        }
+      }
+    },
+    "parameters": {
+      "PostIdParam": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "format": "uuid" },
+        "description": "ID del post (UUID)"
+      },
+      "PageParam": {
+        "name": "page",
+        "in": "query",
+        "required": false,
+        "schema": { "type": "integer", "format": "int32", "minimum": 1, "default": 1 },
+        "description": "Número de página (>= 1)"
+      },
+      "PageSizeParam": {
+        "name": "pageSize",
+        "in": "query",
+        "required": false,
+        "schema": { "type": "integer", "format": "int32", "minimum": 1, "maximum": 100, "default": 10 },
+        "description": "Tamaño de página (1-100)"
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Solicitud inválida",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+      },
+      "NotFound": {
+        "description": "Recurso no encontrado",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+      },
+      "Conflict": {
+        "description": "Conflicto (por ejemplo, duplicado)",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+      },
+      "ServerError": {
+        "description": "Error interno del servidor",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+      }
+    }
+  }
+}

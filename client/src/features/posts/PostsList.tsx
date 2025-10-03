@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react';
-import { useListPostsQuery, useCreatePostMutation, useDeletePostMutation, useUpdatePostMutation } from './posts.api';
-import FilterHeader from './FilterHeader';
-import PostsTable from './PostsTable';
-import PostFormInline from './PostFormInline';
+
 import ConfirmModal from './ConfirmModal';
+import FilterHeader from './FilterHeader';
+import PostFormInline from './PostFormInline';
+import { useListPostsQuery, useCreatePostMutation, useDeletePostMutation, useUpdatePostMutation } from './posts.api';
+import PostsTable from './PostsTable';
 import SuccessModal from './SuccessModal';
 
 export default function PostsList() {

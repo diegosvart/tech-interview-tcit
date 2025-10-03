@@ -359,17 +359,7 @@ Con la base creada:
 - Implementar en frontend: store (RTK), slice `posts`, thunks CRUD, componentes `PostsList` y `PostForm`.
 - Añadir pruebas (unitarias e integración) según `docs/testing.md`.
 
---------------------------------------------------------------------------------
 
-## Anexos
-
-- Directorios propuestos y responsabilidades: `docs/templates/directory-structure-template.md`
-- Docker (desarrollo local): `docs/docker.md`
-- Calidad/CI: `docs/quality.md`, `docs/ci.md`
-
-Fin del TODO detallado.
-
---------------------------------------------------------------------------------
 
 ## Notas técnicas para paso a producción
 
