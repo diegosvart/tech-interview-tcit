@@ -1,5 +1,4 @@
 # docker-compose.yml (dev solo Postgres)
-version: '3.9'
 services:
   postgres:
     image: postgres:16
@@ -11,5 +10,84 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d techtest"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile.dev
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/techtest
+      PORT: 3000
+      NODE_ENV: development
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    entrypoint: ["sh","/app/docker-entrypoint.dev.sh"]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O - http://localhost:3000/api/v1/health || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+
+  client:
+    build:
+      context: .
+      dockerfile: client/Dockerfile.dev
+    environment:
+      # Usar ruta relativa para que el navegador no intente resolver 'server' (hostname interno Docker)
+      # El proxy de Vite redirige /api -> http://server:3000
+      VITE_API_URL: /api/v1
+      NODE_ENV: development
+      # Opcionales de espera API
+      WAIT_FOR_API_URL: http://server:3000/api/v1/health
+      WAIT_FOR_API_TIMEOUT_SECONDS: 60
+      WAIT_FOR_API_INTERVAL_SECONDS: 2
+    depends_on:
+      server:
+        condition: service_healthy
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    entrypoint: ["sh","/app/docker-entrypoint.dev.sh"]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O - http://localhost:5173/ | grep -qi '<!doctype' || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 15s
+
+  studio:
+    profiles: ["studio"]
+    # Reutilizamos la misma imagen dev del server para tener prisma y dependencias disponibles
+    build:
+      context: .
+      dockerfile: server/Dockerfile.dev
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/techtest
+      NODE_ENV: development
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: ["npx","prisma","studio","--port","5555","--browser","none","--hostname","0.0.0.0"]
+    ports:
+      - "5555:5555"
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    # No healthcheck: es una herramienta auxiliar, no un servicio crítico del stack
+
 volumes:
   pgdata:
