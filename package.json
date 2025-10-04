@@ -13,7 +13,12 @@
     "dev": "concurrently --name server,client --prefix-colors green,cyan \"npm --prefix server run dev\" \"npm --prefix client run dev\"",
     "format": "prettier -w .",
     "lint": "eslint .",
-    "typecheck": "echo 'Type checks delegated to subprojects'"
+    "typecheck": "echo 'Type checks delegated to subprojects'",
+    "studio:up": "docker compose -f docker-compose-dev.yml --profile studio up -d studio",
+    "studio:all": "docker compose -f docker-compose-dev.yml --profile studio up -d",
+    "studio:logs": "docker compose -f docker-compose-dev.yml logs -f studio",
+    "studio:restart": "docker compose -f docker-compose-dev.yml restart studio",
+    "studio:stop": "docker compose -f docker-compose-dev.yml stop studio"
   },
   "repository": {
     "type": "git",

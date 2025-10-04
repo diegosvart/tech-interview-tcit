@@ -6,3 +6,12 @@ foreach ($e in $entries) {
 }
 tech-requirements.md
 **/node_modules/
+# Build artifacts & caches
+client/.vite/
+**/.vite/
+**/dist/
+**/coverage/
+
+# Local environment files (not for commit)
+client/.env*
+.env*

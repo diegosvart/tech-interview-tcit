@@ -1,0 +1,12 @@
+node_modules
+dist
+**/dist
+**/*.tsbuildinfo
+**/*.log
+.git
+.gitignore
+Dockerfile*
+**/.env*
+README.MD
+docs
+.vite

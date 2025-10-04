@@ -30,9 +30,29 @@ export interface PostsResponse {
   pagination?: PaginationInfo;
 }
 
+// Determinar base URL respetando variable de entorno, pero evitando exponer host interno 'server' al navegador.
+function resolveBaseUrl() {
+  const envUrl: string | undefined = (import.meta as any).env?.VITE_API_URL;
+  if (!envUrl || envUrl.trim() === '') return '/api/v1';
+  try {
+    const u = new URL(envUrl);
+    // Si el hostname es 'server' (nombre interno Docker) devolver ruta relativa para que el proxy de Vite actúe.
+    if (u.hostname === 'server') {
+      return u.pathname.endsWith('/') ? u.pathname.slice(0, -1) : u.pathname; // normalmente /api/v1
+    }
+    // Normalizar quitando slash final
+    return envUrl.replace(/\/$/, '');
+  } catch {
+    // Si no es una URL válida, asumir que es una ruta relativa ya (e.g. /api/v1)
+    return envUrl.startsWith('/') ? envUrl.replace(/\/$/, '') : `/${envUrl.replace(/\/$/, '')}`;
+  }
+}
+
+const baseUrl = resolveBaseUrl();
+
 export const postsApi = createApi({
   reducerPath: 'postsApi',
-  baseQuery: fetchBaseQuery({ baseUrl: '/api/v1' }),
+  baseQuery: fetchBaseQuery({ baseUrl }),
   tagTypes: ['Posts'],
   endpoints: (builder) => ({
     listPosts: builder.query<PostsResponse, { page?: number; pageSize?: number }>({

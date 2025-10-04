@@ -43,6 +43,7 @@ Más detalle, ver:
  - `docs/frontend-best-practices.md` (buenas prácticas de React)
 - `docs/conventions.md` (estilo y prácticas)
 - `docs/docker.md` (contenedores y docker-compose)
+ - `docs/dev-environment.md` (inspección y verificación del entorno dev multi-servicio)
  - `docs/testing.md` (estrategia de pruebas)
  - `docs/quality.md` (calidad de código)
  - `docs/ci.md` (lineamientos de CI/CD)
@@ -55,6 +56,30 @@ Más detalle, ver:
 Guías rápidas:
 - `QUICKSTART.md` (arranque inmediato)
 - `TODO.md` (plan granular de trabajo)
+
+## Base de Datos – Guía y Clientes SQL
+
+Guía completa de modelo, migraciones, reset y conexión: [`docs/db.md`](./docs/db.md)
+
+Clientes SQL recomendados para desarrollo:
+| Cliente | Multiplataforma | Ventajas | Uso rápido con este proyecto |
+|---------|-----------------|----------|------------------------------|
+| DBeaver | Sí (Java) | Free, soporta muchas BDs, ER diagrams | Host: `localhost`, Port: `5432`, DB: `techtest`, User: `postgres`, Password: `postgres` |
+| TablePlus | macOS/Win/Linux | UI muy ligera, atajos potentes | Igual parámetros; guardar conexión como "TechTest Dev" |
+| pgAdmin 4 | Sí | Orientado a Postgres, admin roles | Crear servidor → connection → parámetros arriba |
+| DataGrip | Sí (JetBrains) | IntelliSense avanzado, búsqueda global | Nueva data source Postgres → parámetros arriba |
+| psql (CLI) | Sí | Scriptable, rápido | `psql -h localhost -U postgres -d techtest` (pass: postgres) |
+
+Para acceso desde otro host de la red local (solo dev):
+```
+postgresql://postgres:postgres@<IP_HOST_DEV>:5432/techtest
+```
+Para túnel SSH (recomendado si hay salto remoto):
+```
+ssh -L 6543:localhost:5432 usuario@host-remoto
+psql -h localhost -p 6543 -U postgres -d techtest
+```
+Credenciales son solo para entorno local de desarrollo; no reutilizar en staging/producción.
 
 ## Author
 

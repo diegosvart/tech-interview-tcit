@@ -8,7 +8,8 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost:3000',
+        // Importante: usar hostname del servicio Docker, no localhost
+        target: 'http://server:3000',
         changeOrigin: true,
         secure: false,
       },
