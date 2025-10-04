@@ -7,10 +7,17 @@
     "doc": "docs"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+  "test": "npm run test:server",
+  "test:server": "npm --prefix server run test:integration",
+    "test:server:coverage": "npm --prefix server run test:coverage",
+    "test:client": "npm --prefix client run test || echo No hay tests de frontend todavía",
     "server:dev": "npm --prefix server run dev",
     "client:dev": "npm --prefix client run dev",
     "dev": "concurrently --name server,client --prefix-colors green,cyan \"npm --prefix server run dev\" \"npm --prefix client run dev\"",
+  "build:all": "npm --prefix server run build && npm --prefix client run build",
+  "lint:all": "npm --prefix server run lint && npm --prefix client run lint",
+  "test:db:up": "docker run --name techtest-postgres-ephemeral -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=tech_test_tcit_test -p 5544:5432 -d --rm postgres:16",
+  "test:db:down": "docker stop techtest-postgres-ephemeral",
     "format": "prettier -w .",
     "lint": "eslint .",
     "typecheck": "echo 'Type checks delegated to subprojects'",

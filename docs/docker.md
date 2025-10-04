@@ -1,9 +1,10 @@
 # Dockerización – Desarrollo Local
 
-Esta guía cubre dos modos de trabajo:
+Esta guía cubre tres modos de trabajo:
 
 1. Modo ligero (solo Postgres en Docker) – original y aún válido.
-2. Nuevo modo multi-servicio (Postgres + Backend + Frontend todos en contenedores con hot reload) para levantar el stack completo con un solo comando.
+2. Modo multi-servicio (Postgres + Backend + Frontend todos en contenedores con hot reload) para levantar el stack completo con un solo comando.
+3. Perfil de pruebas (servicio `postgres-test`) para ejecutar la suite de integración backend de forma aislada y reproducible (local y CI).
 
 ## Objetivos
 Modo ligero:
@@ -28,7 +29,7 @@ CLIENT_PORT=5173
 VITE_API_BASE_URL=http://localhost:4000/api/v1
 ```
 
-## docker-compose-dev.yml (multi-servicio)
+## docker-compose-dev.yml (multi-servicio + profiles)
 
 Archivo: `docker-compose-dev.yml`
 
@@ -111,6 +112,23 @@ services:
 
   studio:
     profiles: ["studio"]
+  postgres-test:
+    profiles: ["test"]
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: tech_test_tcit_test
+    ports:
+      - "5544:5432"
+    tmpfs:
+      - /var/lib/postgresql/data:rw
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d tech_test_tcit_test"]
+      interval: 3s
+      timeout: 5s
+      retries: 20
+    # Uso: sólo durante tests de integración. tmpfs => I/O muy rápido y datos efímeros.
     build:
       context: .
       dockerfile: server/Dockerfile.dev
@@ -141,6 +159,7 @@ Características:
  - Volúmenes montan el código host para recarga en caliente (tsx watch y Vite).
  - `node_modules` se aísla dentro del contenedor para evitar incompatibilidades locales.
  - Servicio opcional `studio` (perfil `studio`) para lanzar Prisma Studio bajo demanda.
+- Servicio opcional `postgres-test` (perfil `test`) pensado para: ejecutar `npm test` sin tocar la base de datos de desarrollo y con arranque / teardown ultra rápido.
 
 ### Robustez de arranque
 
@@ -224,6 +243,66 @@ Nota: Si no carga el navegador:
 3. Revisa logs: `docker compose -f docker-compose-dev.yml logs --tail=80 studio`
 4. Reinicia Studio: `docker compose -f docker-compose-dev.yml restart studio`
 
+
+### Perfil de pruebas (postgres-test)
+
+Razonamiento:
+- Evitar contaminar datos de desarrollo.
+- Aislar flujos CI y locales.
+- Minimizar tiempo de preparación (DB en memoria RAM vía `tmpfs`).
+
+Levantar solo la DB de test:
+```powershell
+docker compose -f docker-compose-dev.yml --profile test up -d postgres-test
+```
+
+Ejecutar tests backend desde la raíz (aplica migraciones a la DB de test automáticamente por `pretest:integration`):
+```powershell
+npm test
+```
+
+Apagar sólo la DB de test:
+```powershell
+docker compose -f docker-compose-dev.yml --profile test stop postgres-test
+```
+
+Eliminar contenedor (reinicio limpio):
+```powershell
+docker compose -f docker-compose-dev.yml --profile test rm -f postgres-test
+```
+
+Flujo rápido (levantar, test, bajar):
+```powershell
+docker compose -f docker-compose-dev.yml --profile test up -d postgres-test; npm test; docker compose -f docker-compose-dev.yml --profile test stop postgres-test
+```
+
+Si cambias el esquema Prisma y necesitas regenerar cliente + migrar antes de correr tests:
+```powershell
+docker compose -f docker-compose-dev.yml --profile test up -d postgres-test
+npm --prefix server run pretest:integration
+npm test
+```
+
+### Integración en CI (resumen)
+En GitHub Actions se puede usar un service container Postgres o reutilizar este compose. Recomendado para velocidad: service container oficial + variables `DATABASE_URL` apuntando a ese host. La lógica local (`pretest:integration`) seguirá aplicando migraciones.
+
+Pseudoflujo CI:
+1. Checkout
+2. Instalar dependencias raíz (cache npm)
+3. Levantar Postgres (service) en puerto 5544
+4. `npm test`
+5. `npm run lint:all` / `npm run build:all`
+6. Publicar reportes (coverage / summary)
+
+El badge de estado reflejará la ejecución del workflow anterior.
+
+### Troubleshooting perfil test
+| Síntoma | Posible causa | Acción |
+|--------|---------------|--------|
+| `ECONNREFUSED` a la DB | DB aún no healthy | Esperar unos segundos o inspeccionar `docker compose ps` |
+| Tests intermitentes 404 tras POST | (Histórico) truncado global agresivo | Ya mitigado: mantener truncado por suite únicamente |
+| Migraciones no aplicadas | Olvidaste levantar `postgres-test` | Levantar profile test antes de `npm test` |
+| Lentitud inesperada | Sin `tmpfs` (cambios locales) | Verificar sección `postgres-test` en compose |
 
 ### Uso rápido (multi-servicio)
 

@@ -1,5 +1,7 @@
 # Test técnico full‑stack – Backend‑first (Node/Express/Prisma) + Frontend (React/Vite/RTK)
 
+[![CI](https://github.com/diegosvart/tech-interview-tcit/actions/workflows/ci.yml/badge.svg)](https://github.com/diegosvart/tech-interview-tcit/actions/workflows/ci.yml)
+
 ![Listado de Posts](./posts.png)
 
 [➡ Quick Start](./QUICKSTART.md)
@@ -7,6 +9,13 @@
 Repositorio de una app web full‑stack construida con enfoque backend‑first: contrato OpenAPI, backend Node.js + Express (TypeScript) con Prisma/PostgreSQL y pruebas; luego frontend React + Vite + Redux Toolkit (TypeScript). Clean Architecture, IDs UUID, paginación por offset, Docker para dev y CI en GitHub Actions.
 
 Importante: En esta fase no se generará código. Esta documentación define alcance, arquitectura, contratos y el plan de trabajo (TODO) siguiendo buenas prácticas, clean code y camelCase.
+
+## Calidad & CI
+
+- Workflow CI: `.github/workflows/ci.yml` ejecuta tests backend (con coverage), lint unificado, build y placeholder de tests frontend.
+- Base de datos de test aislada (service Postgres puerto 5544) para evitar contaminación de datos de desarrollo.
+- Umbrales de cobertura definidos en `server/vitest.config.ts` (líneas ≈70%).
+- Próximos pasos: añadir primeras pruebas de frontend (`client/src/...`), consolidar badge de cobertura (opcional) y checklist pre‑merge.
 
 ## Objetivo
 

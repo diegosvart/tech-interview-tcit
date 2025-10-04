@@ -8,6 +8,8 @@
   },
   "scripts": {
     "test": "cross-env NODE_ENV=test vitest run --reporter=verbose",
+    "pretest:integration": "cross-env NODE_ENV=test DATABASE_URL=postgresql://postgres:postgres@localhost:5544/tech_test_tcit_test?schema=public prisma generate && cross-env NODE_ENV=test DATABASE_URL=postgresql://postgres:postgres@localhost:5544/tech_test_tcit_test?schema=public prisma migrate deploy",
+    "test:integration": "cross-env NODE_ENV=test DATABASE_URL=postgresql://postgres:postgres@localhost:5544/tech_test_tcit_test?schema=public vitest run --reporter=verbose",
     "test:watch": "cross-env NODE_ENV=test vitest --watch",
     "test:coverage": "cross-env NODE_ENV=test vitest run --coverage",
     "dev": "cross-env NODE_ENV=development tsx watch src/main.ts",
@@ -19,6 +21,7 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
     "prisma:seed": "prisma db seed",
+    "db:test:reset": "cross-env NODE_ENV=test prisma migrate reset --force --skip-seed",
     "sanity:health": "tsx scripts/sanity-health.ts",
     "sanity:crud": "tsx scripts/sanity-crud.ts"
   },
@@ -54,6 +57,6 @@
     "supertest": "^7.0.0",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",
-    "vitest": "^2.0.5"
+    "vitest": "^3.2.4"
   }
 }

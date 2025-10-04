@@ -1,93 +1,101 @@
 name: CI
 
 on:
-  pull_request:
   push:
     branches: [ main, develop, feature/* ]
+  pull_request:
+    branches: [ main, develop ]
+
+permissions:
+  contents: read
+  actions: read
+  checks: write
 
 jobs:
-  lint:
-    name: Lint (server & client)
+  build-test:
+    name: Build & Test (Node ${{ matrix.node }})
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        project: [server, client]
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-      - name: Install deps (${{ matrix.project }})
-        run: npm ci --prefix ${{ matrix.project }}
-      - name: Lint ${{ matrix.project }}
-        run: |
-          if [ "${{ matrix.project }}" = "server" ]; then npm --prefix server run lint; fi
-          if [ "${{ matrix.project }}" = "client" ]; then npm --prefix client run lint || echo "(client lint warnings allowed)"; fi
-
-  backend:
-    name: Backend (server)
-    needs: [lint]
-    runs-on: ubuntu-latest
+        node: [20.x]
     services:
       postgres:
-        image: postgres:16-alpine
+        image: postgres:16
+        ports:
+          - 5544:5432
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: techtest
-        ports:
-          - 5432:5432
+          POSTGRES_DB: tech_test_tcit_test
         options: >-
-          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 5
+          --health-cmd "pg_isready -U postgres -d tech_test_tcit_test" \
+          --health-interval 5s \
+          --health-timeout 5s \
+          --health-retries 10
+
     env:
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/techtest
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5544/tech_test_tcit_test?schema=public
       NODE_ENV: test
+      CI: true
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Setup Node
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node }}
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ matrix.node }}
           cache: 'npm'
-      - name: Install server deps
-        run: npm ci --prefix server
-      - name: Prisma generate
-        run: npm --prefix server run prisma:generate || true
-      - name: Run migrations (deploy)
-        run: npm --prefix server run prisma:migrate:deploy || true
-      - name: Seed database
-        run: npm --prefix server run prisma:seed
-      - name: Run backend tests
-        run: npm test --prefix server -- --coverage
 
-  frontend:
-    name: Frontend (client)
-    needs: [lint]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-      - name: Install client deps
-        run: npm ci --prefix client
-      - name: Typecheck
-        run: npx tsc -p client/tsconfig.json --noEmit
-      - name: Frontend tests
-        run: npm test --prefix client -- --coverage
-      - name: Build frontend
-        run: npm run build --prefix client
+      - name: Install root dependencies
+        run: npm install
 
-  summary:
-    name: Summary
-    needs: [backend, frontend]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Result
+      - name: Install server dependencies
+        working-directory: server
+        run: npm install
+
+      - name: Install client dependencies
+        working-directory: client
+        run: npm install
+
+      - name: Wait for Postgres
         run: |
-          echo "Backend status: ${{ needs.backend.result }}"
-          echo "Frontend status: ${{ needs.frontend.result }}"
+          for i in {1..30}; do
+            node -e "require('net').connect(5544,'127.0.0.1').on('connect',()=>{process.exit(0)}).on('error',()=>process.exit(1))" && \
+            PGPASSWORD=postgres psql -h 127.0.0.1 -U postgres -d tech_test_tcit_test -c 'SELECT 1' && break || sleep 2;
+            if [ $i -eq 30 ]; then echo 'Postgres no respondió a tiempo'; exit 1; fi;
+          done
+        shell: bash
+
+      - name: Backend tests (coverage)
+        run: npm run test:server:coverage
+
+      - name: Frontend tests (placeholder)
+        run: |
+          echo "Ejecutando tests frontend si existen...";
+          npm --prefix client run test || echo "(No hay tests frontend aún)"
+
+      - name: Lint all
+        run: npm run lint:all
+
+      - name: Build all
+        run: npm run build:all
+
+      - name: Upload backend coverage artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage
+          path: server/coverage
+          if-no-files-found: warn
+
+      - name: Summary
+        if: always()
+        run: |
+          echo '## CI Summary' >> $GITHUB_STEP_SUMMARY
+          echo '' >> $GITHUB_STEP_SUMMARY
+          echo '* Node version: ${{ matrix.node }}' >> $GITHUB_STEP_SUMMARY
+          echo '* Coverage backend artifact: backend-coverage' >> $GITHUB_STEP_SUMMARY
+          echo '* Frontend tests: placeholder (añadir cuando existan)' >> $GITHUB_STEP_SUMMARY

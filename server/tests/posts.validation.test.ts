@@ -1,5 +1,6 @@
 /// <reference types="vitest" />
 import { describe, it, expect, beforeAll } from 'vitest';
+import { prisma } from '../src/infrastructure/prisma/client';
 import request from 'supertest';
 import app from '../src/main';
 
@@ -7,6 +8,9 @@ import app from '../src/main';
  * Tests de validación (400) para los endpoints de Posts
  */
 describe('Posts validation (400)', () => {
+  beforeAll(async () => {
+    await prisma.$executeRawUnsafe('TRUNCATE TABLE "Post" RESTART IDENTITY CASCADE;');
+  });
   it('GET /api/v1/posts debe fallar si page < 1', async () => {
     const res = await request(app).get('/api/v1/posts?page=0&pageSize=10');
     expect(res.status).toBe(400);
