@@ -29,9 +29,9 @@ jobs:
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: tech_test_tcit_test
         options: >-
-          --health-cmd "pg_isready -U postgres -d tech_test_tcit_test" \
-          --health-interval 5s \
-          --health-timeout 5s \
+          --health-cmd "pg_isready -U postgres -d tech_test_tcit_test"
+          --health-interval 5s
+          --health-timeout 5s
           --health-retries 10
 
     env:
@@ -60,14 +60,27 @@ jobs:
         working-directory: client
         run: npm install
 
+      - name: Install psql client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
       - name: Wait for Postgres
-        run: |
-          for i in {1..30}; do
-            node -e "require('net').connect(5544,'127.0.0.1').on('connect',()=>{process.exit(0)}).on('error',()=>process.exit(1))" && \
-            PGPASSWORD=postgres psql -h 127.0.0.1 -U postgres -d tech_test_tcit_test -c 'SELECT 1' && break || sleep 2;
-            if [ $i -eq 30 ]; then echo 'Postgres no respondió a tiempo'; exit 1; fi;
-          done
         shell: bash
+        run: |
+          set +e
+          for i in $(seq 1 40); do
+            node -e "require('net').connect(5544,'127.0.0.1').on('connect',()=>{process.exit(0)}).on('error',()=>process.exit(1))"
+            if [ $? -eq 0 ]; then
+              PGPASSWORD=postgres psql -h 127.0.0.1 -U postgres -d tech_test_tcit_test -c 'SELECT 1' >/dev/null 2>&1
+              if [ $? -eq 0 ]; then
+                echo 'Postgres ready';
+                exit 0;
+              fi
+            fi
+            echo "Waiting Postgres ($i)...";
+            sleep 2;
+          done
+          echo 'Postgres timeout';
+          exit 1
 
       - name: Backend tests (coverage)
         run: npm run test:server:coverage
