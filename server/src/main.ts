@@ -61,11 +61,9 @@ app.use((req, res) => {
 // Register global error handler (must be after routes)
 app.use(errorHandler);
 
-// Inicio del servidor
-const port = Number(process.env.PORT) || 3000;
-app.listen(port, () => {
-  // eslint-disable-next-line no-console
-  console.log(`HTTP server listening on http://localhost:${port}`);
-});
+// Exportamos la app sin arrancar el listener. Esto permite:
+// - Reutilizar la misma instancia en tests (supertest)
+// - Evitar puertos en conflicto cuando se ejecutan múltiples suites
+// Un archivo separado (p.ej. server.ts) puede encargarse de arrancar el servidor en entornos reales.
 
 export default app;
